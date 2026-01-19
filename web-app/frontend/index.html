@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blind Watermark Studio</title>
+  </head>
+  <body>
+    <main class="page">
+      <header class="hero">
+        <p class="eyebrow">Local build</p>
+        <h1>Blind Watermark Studio</h1>
+        <p class="subhead">
+          Embed and extract text watermarks locally. Your images stay on this machine while the API does the
+          heavy lifting.
+        </p>
+        <div class="server-row">
+          <label class="field">
+            <span>API Base</span>
+            <input id="apiBase" type="url" placeholder="http://localhost:6123" />
+          </label>
+        </div>
+      </header>
+
+      <section class="grid">
+        <div class="card" data-delay="0">
+          <div class="card-header">
+            <h2>Embed text</h2>
+            <p>Create a new image with a hidden message.</p>
+          </div>
+          <form id="embedForm" class="stack">
+            <label class="field">
+              <span>Source image</span>
+              <input id="embedImage" name="image" type="file" accept="image/*" required />
+            </label>
+            <label class="field">
+              <span>Watermark text</span>
+              <textarea id="embedText" name="watermark" rows="3" placeholder="Type your watermark" required>Copyright HAKU. All rights reserved. @0xH4KU</textarea>
+            </label>
+            <button type="submit">Embed watermark</button>
+          </form>
+          <div id="embedStatus" class="status">Waiting for input</div>
+          <div class="result">
+            <img id="embedPreview" alt="Embedded preview" />
+            <div class="meta">
+              <span>wm_size: <strong id="embedWmSize">-</strong></span>
+              <a id="embedDownload" class="ghost disabled" href="#" download>Download image</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" data-delay="1">
+          <div class="card-header">
+            <h2>Extract text</h2>
+            <p>Recover a watermark from a watermarked image.</p>
+          </div>
+          <form id="extractForm" class="stack">
+            <label class="field">
+              <span>Watermarked image</span>
+              <input id="extractImage" name="image" type="file" accept="image/*" required />
+            </label>
+            <label class="field">
+              <span>wm_size (bits)</span>
+              <input id="extractWmSize" name="wm_size" type="number" min="1" placeholder="From embed" required />
+            </label>
+            <button type="submit">Extract watermark</button>
+          </form>
+          <div id="extractStatus" class="status">Waiting for input</div>
+          <div class="result">
+            <label class="field">
+              <span>Extracted text</span>
+              <textarea id="extractOutput" rows="4" readonly placeholder="Result will appear here"></textarea>
+            </label>
+            <button id="copyExtract" type="button" class="ghost">Copy text</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

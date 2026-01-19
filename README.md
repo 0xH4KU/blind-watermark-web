@@ -23,6 +23,29 @@ Blind watermark based on DWT-DCT-SVD.
 - **中文 readme** [README_cn.md](README_cn.md)
 - **Source code:** [https://github.com/guofei9987/blind_watermark](https://github.com/guofei9987/blind_watermark)
 
+# Local Web App (Fork Additions)
+
+This fork includes a minimal local web app in `web-app/` for embedding and extracting text watermarks.
+See `web-app/README.md` for full details.
+
+Quick start (local dev):
+```bash
+python3 -m venv .venv
+./.venv/bin/pip install -r web-app/backend/requirements.txt
+cd web-app/backend
+../.venv/bin/python -m uvicorn main:app --reload --port 6123
+```
+
+```bash
+cd web-app/frontend
+npm install
+npm run dev -- --port 6124
+```
+
+Open `http://localhost:6124` and point the API base to `http://localhost:6123`.
+
+PM2 config is included at `ecosystem.config.cjs`.
+
 
 
 # install
