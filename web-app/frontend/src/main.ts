@@ -1,5 +1,3 @@
-import "./style.css";
-
 const FALLBACK_BASE = "http://localhost:6123";
 const DEFAULT_BASE = (() => {
   if (typeof window === "undefined") {
