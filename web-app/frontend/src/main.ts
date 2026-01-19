@@ -1,6 +1,17 @@
 import "./style.css";
 
-const DEFAULT_BASE = "http://localhost:6123";
+const FALLBACK_BASE = "http://localhost:6123";
+const DEFAULT_BASE = (() => {
+  if (typeof window === "undefined") {
+    return FALLBACK_BASE;
+  }
+  const host = window.location.hostname;
+  if (host === "localhost" || host === "127.0.0.1") {
+    return FALLBACK_BASE;
+  }
+  const protocol = window.location.protocol;
+  return `${protocol}//${host}:6123`;
+})();
 
  type StatusKind = "loading" | "good" | "bad";
 

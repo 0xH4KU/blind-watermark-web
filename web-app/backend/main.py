@@ -23,6 +23,8 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:6124",
         "http://127.0.0.1:6124",
+        "http://mac.sgponte:6124",
+        "https://mac.sgponte:6124",
     ],
     allow_credentials=True,
     allow_methods=["*"],
