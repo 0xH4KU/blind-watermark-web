@@ -12,8 +12,8 @@
         <p class="eyebrow">Local build</p>
         <h1>Blind Watermark Studio</h1>
         <p class="subhead">
-          Embed and extract text watermarks locally. Your images stay on this machine while the API does the
-          heavy lifting.
+          Embed and extract text, image, and bit watermarks locally. Recover from crop/screenshot attacks with
+          the original image as reference.
         </p>
         <div class="server-row">
           <label class="field">
@@ -25,6 +25,39 @@
 
       <section class="grid">
         <div class="card" data-delay="0">
+          <div class="card-header">
+            <h2>Settings</h2>
+            <p>Defaults applied to every request.</p>
+          </div>
+          <div class="stack">
+            <div class="row">
+              <label class="field">
+                <span>password_img</span>
+                <input id="passwordImg" type="number" min="1" value="1" />
+              </label>
+              <label class="field">
+                <span>password_wm</span>
+                <input id="passwordWm" type="number" min="1" value="1" />
+              </label>
+            </div>
+            <div class="row">
+              <label class="field">
+                <span>Output format</span>
+                <select id="outputFormat">
+                  <option value="png" selected>PNG</option>
+                  <option value="jpg">JPG</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Compression ratio (0-100)</span>
+                <input id="compressionRatio" type="number" min="0" max="100" placeholder="Optional" />
+              </label>
+            </div>
+            <p class="hint">PNG uses lossless compression. JPG uses quality.</p>
+          </div>
+        </div>
+
+        <div class="card" data-delay="1">
           <div class="card-header">
             <h2>Embed text</h2>
             <p>Create a new image with a hidden message.</p>
@@ -50,7 +83,7 @@
           </div>
         </div>
 
-        <div class="card" data-delay="1">
+        <div class="card" data-delay="2">
           <div class="card-header">
             <h2>Extract text</h2>
             <p>Recover a watermark from a watermarked image.</p>
@@ -73,6 +106,376 @@
               <textarea id="extractOutput" rows="4" readonly placeholder="Result will appear here"></textarea>
             </label>
             <button id="copyExtract" type="button" class="ghost">Copy text</button>
+          </div>
+        </div>
+
+        <div class="card" data-delay="3">
+          <div class="card-header">
+            <h2>Embed image</h2>
+            <p>Hide a grayscale watermark image inside your source.</p>
+          </div>
+          <form id="embedImageForm" class="stack">
+            <label class="field">
+              <span>Source image</span>
+              <input id="embedImageSource" name="image" type="file" accept="image/*" required />
+            </label>
+            <label class="field">
+              <span>Watermark image</span>
+              <input id="embedImageWatermark" name="watermark_image" type="file" accept="image/*" required />
+            </label>
+            <button type="submit">Embed watermark</button>
+          </form>
+          <div id="embedImageStatus" class="status">Waiting for input</div>
+          <div class="result">
+            <img id="embedImagePreview" alt="Embedded image preview" />
+            <div class="meta">
+              <span>wm_shape: <strong id="embedImageWmShape">-</strong></span>
+              <span>wm_size: <strong id="embedImageWmSize">-</strong></span>
+              <a id="embedImageDownload" class="ghost disabled" href="#" download>Download image</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" data-delay="4">
+          <div class="card-header">
+            <h2>Extract image</h2>
+            <p>Extract a hidden watermark image from a watermarked image.</p>
+          </div>
+          <form id="extractImageForm" class="stack">
+            <label class="field">
+              <span>Watermarked image</span>
+              <input id="extractImageSource" name="image" type="file" accept="image/*" required />
+            </label>
+            <div class="row">
+              <label class="field">
+                <span>wm_width</span>
+                <input id="extractImageWidth" name="wm_width" type="number" min="1" placeholder="Width" required />
+              </label>
+              <label class="field">
+                <span>wm_height</span>
+                <input id="extractImageHeight" name="wm_height" type="number" min="1" placeholder="Height" required />
+              </label>
+            </div>
+            <button type="submit">Extract watermark</button>
+          </form>
+          <div id="extractImageStatus" class="status">Waiting for input</div>
+          <div class="result">
+            <img id="extractImagePreview" alt="Extracted watermark image" />
+            <div class="meta">
+              <a id="extractImageDownload" class="ghost disabled" href="#" download>Download watermark</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" data-delay="5">
+          <div class="card-header">
+            <h2>Embed bits</h2>
+            <p>Embed a custom 0/1 sequence into an image.</p>
+          </div>
+          <form id="embedBitForm" class="stack">
+            <label class="field">
+              <span>Source image</span>
+              <input id="embedBitImage" name="image" type="file" accept="image/*" required />
+            </label>
+            <label class="field">
+              <span>Watermark bits</span>
+              <textarea
+                id="embedBitValue"
+                name="watermark_bits"
+                rows="3"
+                placeholder="10100101 (0/1 with optional spaces or commas)"
+                required
+              ></textarea>
+            </label>
+            <button type="submit">Embed bits</button>
+          </form>
+          <div id="embedBitStatus" class="status">Waiting for input</div>
+          <div class="result">
+            <img id="embedBitPreview" alt="Embedded bits preview" />
+            <div class="meta">
+              <span>wm_size: <strong id="embedBitSize">-</strong></span>
+              <a id="embedBitDownload" class="ghost disabled" href="#" download>Download image</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" data-delay="6">
+          <div class="card-header">
+            <h2>Extract bits</h2>
+            <p>Recover the 0/1 sequence from a watermarked image.</p>
+          </div>
+          <form id="extractBitForm" class="stack">
+            <label class="field">
+              <span>Watermarked image</span>
+              <input id="extractBitImage" name="image" type="file" accept="image/*" required />
+            </label>
+            <label class="field">
+              <span>wm_size (bits)</span>
+              <input id="extractBitSize" name="wm_size" type="number" min="1" placeholder="From embed" required />
+            </label>
+            <button type="submit">Extract bits</button>
+          </form>
+          <div id="extractBitStatus" class="status">Waiting for input</div>
+          <div class="result">
+            <label class="field">
+              <span>Extracted bits</span>
+              <textarea id="extractBitOutput" rows="4" readonly placeholder="Bits will appear here"></textarea>
+            </label>
+            <button id="copyBit" type="button" class="ghost">Copy bits</button>
+          </div>
+        </div>
+
+        <div class="card" data-delay="7">
+          <div class="card-header">
+            <h2>Attack lab</h2>
+            <p>Generate attacked images and route them into recovery or extraction.</p>
+          </div>
+          <form id="attackForm" class="stack">
+            <label class="field">
+              <span>Watermarked image</span>
+              <input id="attackImage" name="image" type="file" accept="image/*" required />
+            </label>
+            <label class="field">
+              <span>Attack type</span>
+              <select id="attackType" name="attack">
+                <option value="rotate">Rotate</option>
+                <option value="resize">Resize</option>
+                <option value="brightness">Brightness</option>
+                <option value="salt_pepper">Salt &amp; pepper</option>
+                <option value="mask">Mask blocks</option>
+                <option value="crop">Crop</option>
+                <option value="screenshot">Screenshot (crop + scale)</option>
+                <option value="vcut">Vertical cut</option>
+                <option value="hcut">Horizontal cut</option>
+              </select>
+            </label>
+
+            <div class="attack-options" data-attack="rotate">
+              <label class="field">
+                <span>Angle (degrees)</span>
+                <input id="attackAngle" name="angle" type="number" step="1" value="45" />
+              </label>
+            </div>
+
+            <div class="attack-options" data-attack="resize">
+              <div class="row">
+                <label class="field">
+                  <span>Output width</span>
+                  <input id="attackWidth" name="out_width" type="number" min="1" value="800" />
+                </label>
+                <label class="field">
+                  <span>Output height</span>
+                  <input id="attackHeight" name="out_height" type="number" min="1" value="600" />
+                </label>
+              </div>
+            </div>
+
+            <div class="attack-options" data-attack="brightness">
+              <label class="field">
+                <span>Ratio</span>
+                <input id="attackBrightness" name="ratio" type="number" step="0.05" value="0.9" />
+              </label>
+            </div>
+
+            <div class="attack-options" data-attack="salt_pepper">
+              <label class="field">
+                <span>Noise ratio</span>
+                <input id="attackNoise" name="ratio" type="number" step="0.01" value="0.01" />
+              </label>
+            </div>
+
+            <div class="attack-options" data-attack="mask">
+              <div class="row">
+                <label class="field">
+                  <span>Block ratio</span>
+                  <input id="attackMaskRatio" name="ratio" type="number" step="0.05" value="0.1" />
+                </label>
+                <label class="field">
+                  <span>Blocks</span>
+                  <input id="attackMaskCount" name="count" type="number" min="1" value="3" />
+                </label>
+              </div>
+            </div>
+
+            <div class="attack-options" data-attack="crop">
+              <div class="row">
+                <label class="field">
+                  <span>x1 ratio</span>
+                  <input id="attackCropX1" name="x1r" type="number" step="0.01" value="0.1" />
+                </label>
+                <label class="field">
+                  <span>y1 ratio</span>
+                  <input id="attackCropY1" name="y1r" type="number" step="0.01" value="0.1" />
+                </label>
+                <label class="field">
+                  <span>x2 ratio</span>
+                  <input id="attackCropX2" name="x2r" type="number" step="0.01" value="0.7" />
+                </label>
+                <label class="field">
+                  <span>y2 ratio</span>
+                  <input id="attackCropY2" name="y2r" type="number" step="0.01" value="0.6" />
+                </label>
+              </div>
+            </div>
+
+            <div class="attack-options" data-attack="screenshot">
+              <div class="row">
+                <label class="field">
+                  <span>x1 ratio</span>
+                  <input name="x1r" type="number" step="0.01" value="0.1" />
+                </label>
+                <label class="field">
+                  <span>y1 ratio</span>
+                  <input name="y1r" type="number" step="0.01" value="0.1" />
+                </label>
+                <label class="field">
+                  <span>x2 ratio</span>
+                  <input name="x2r" type="number" step="0.01" value="0.7" />
+                </label>
+                <label class="field">
+                  <span>y2 ratio</span>
+                  <input name="y2r" type="number" step="0.01" value="0.6" />
+                </label>
+              </div>
+              <label class="field">
+                <span>Scale</span>
+                <input id="attackScale" name="scale" type="number" step="0.05" value="0.7" />
+              </label>
+            </div>
+
+            <div class="attack-options" data-attack="vcut">
+              <label class="field">
+                <span>Keep height ratio</span>
+                <input id="attackVCut" name="ratio" type="number" step="0.05" value="0.8" />
+              </label>
+            </div>
+
+            <div class="attack-options" data-attack="hcut">
+              <label class="field">
+                <span>Keep width ratio</span>
+                <input id="attackHCut" name="ratio" type="number" step="0.05" value="0.8" />
+              </label>
+            </div>
+
+            <button type="submit">Run attack</button>
+          </form>
+          <div id="attackStatus" class="status">Waiting for input</div>
+          <div class="result">
+            <img id="attackPreview" alt="Attacked preview" />
+            <div class="meta">
+              <span>out: <strong id="attackOutShape">-</strong></span>
+              <span>loc: <strong id="attackLoc">-</strong></span>
+              <span>scale: <strong id="attackScaleValue">-</strong></span>
+              <a id="attackDownload" class="ghost disabled" href="#" download>Download image</a>
+              <button id="attackToText" class="ghost" type="button">Use for text extract</button>
+              <button id="attackToImage" class="ghost" type="button">Use for image extract</button>
+              <button id="attackToBit" class="ghost" type="button">Use for bit extract</button>
+              <button id="attackToRecover" class="ghost" type="button">Use for recovery</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" data-delay="8">
+          <div class="card-header">
+            <h2>Recover crop/screenshot</h2>
+            <p>Estimate crop parameters and rebuild a full-size image.</p>
+          </div>
+          <form id="recoverForm" class="stack">
+            <label class="field">
+              <span>Original (full size) image</span>
+              <input id="recoverOriginal" name="original_image" type="file" accept="image/*" />
+            </label>
+            <label class="field">
+              <span>Attacked (cropped/screenshot) image</span>
+              <input id="recoverTemplate" name="template_image" type="file" accept="image/*" required />
+            </label>
+            <div class="panel">
+              <p class="panel-title">Manual crop helper</p>
+              <div class="cropper">
+                <canvas id="recoverCropCanvas"></canvas>
+              </div>
+              <div class="row">
+                <button id="recoverCropApply" type="button" class="ghost">Apply crop to attacked image</button>
+                <button id="recoverCropReset" type="button" class="ghost">Clear crop</button>
+              </div>
+              <p class="hint">
+                Drag to select the real image area (exclude UI/black borders), then apply to replace the
+                attacked image input.
+              </p>
+            </div>
+            <div class="row">
+              <label class="field">
+                <span>Scale min</span>
+                <input id="recoverScaleMin" name="scale_min" type="number" step="0.01" value="0.5" />
+              </label>
+              <label class="field">
+                <span>Scale max</span>
+                <input id="recoverScaleMax" name="scale_max" type="number" step="0.01" value="2" />
+              </label>
+              <label class="field">
+                <span>Search samples</span>
+                <input id="recoverSearchNum" name="search_num" type="number" min="1" value="200" />
+              </label>
+            </div>
+            <div class="panel">
+              <p class="panel-title">Known crop parameters (optional)</p>
+              <div class="row">
+                <label class="field">
+                  <span>x1</span>
+                  <input id="recoverX1" name="x1" type="number" min="0" />
+                </label>
+                <label class="field">
+                  <span>y1</span>
+                  <input id="recoverY1" name="y1" type="number" min="0" />
+                </label>
+                <label class="field">
+                  <span>x2</span>
+                  <input id="recoverX2" name="x2" type="number" min="0" />
+                </label>
+                <label class="field">
+                  <span>y2</span>
+                  <input id="recoverY2" name="y2" type="number" min="0" />
+                </label>
+              </div>
+              <div class="row">
+                <label class="field">
+                  <span>Original width</span>
+                  <input id="recoverWidth" name="image_width" type="number" min="1" />
+                </label>
+                <label class="field">
+                  <span>Original height</span>
+                  <input id="recoverHeight" name="image_height" type="number" min="1" />
+                </label>
+              </div>
+              <p class="hint">Provide width/height only if you do not upload the original image.</p>
+            </div>
+            <div class="row">
+              <button type="submit" class="ghost">Recover image</button>
+              <button id="recoverExtractText" type="button">Recover + Extract text</button>
+            </div>
+            <div class="panel">
+              <p class="panel-title">Auto-extract text</p>
+              <label class="field">
+                <span>wm_size (bits)</span>
+                <input id="recoverTextWmSize" type="number" min="1" placeholder="From embed" />
+              </label>
+              <p class="hint">Uses the recovered image and the current passwords.</p>
+            </div>
+          </form>
+          <div id="recoverStatus" class="status">Waiting for input</div>
+          <div class="result">
+            <img id="recoverPreview" alt="Recovered preview" />
+            <div class="meta">
+              <span>loc: <strong id="recoverLoc">-</strong></span>
+              <span>scale: <strong id="recoverScale">-</strong></span>
+              <span>score: <strong id="recoverScore">-</strong></span>
+              <a id="recoverDownload" class="ghost disabled" href="#" download>Download image</a>
+            </div>
+            <label class="field">
+              <span>Recovered text</span>
+              <textarea id="recoverTextOutput" rows="3" readonly placeholder="Recovered text will appear here"></textarea>
+            </label>
+            <button id="copyRecoverText" type="button" class="ghost">Copy text</button>
           </div>
         </div>
       </section>

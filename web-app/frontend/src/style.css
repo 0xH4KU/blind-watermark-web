@@ -119,6 +119,12 @@ main.page {
   color: var(--muted);
 }
 
+.hint {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
 input,
 textarea,
 select {
@@ -192,6 +198,50 @@ a.ghost {
   flex-wrap: wrap;
   gap: 12px;
   align-items: center;
+}
+
+.attack-options {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.attack-options.active {
+  display: flex;
+}
+
+.panel {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--accent-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cropper {
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  padding: 8px;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+}
+
+.cropper canvas {
+  display: block;
+  max-width: 100%;
+  border-radius: 8px;
+  background: #f7f6f1;
+  touch-action: none;
+}
+
+.panel-title {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--ink);
+  font-weight: 600;
 }
 
 a.ghost.disabled {

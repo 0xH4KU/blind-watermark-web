@@ -25,8 +25,13 @@ Blind watermark based on DWT-DCT-SVD.
 
 # Local Web App (Fork Additions)
 
-This fork includes a minimal local web app in `web-app/` for embedding and extracting text watermarks.
+This fork includes a local web app in `web-app/` for embedding and extracting watermarks with recovery tools.
 See `web-app/README.md` for full details.
+
+Highlights:
+- Embed/extract text, image, and bit watermarks.
+- Crop/screenshot recovery with a manual crop helper and one-click recover+extract text.
+- Attack lab (rotate/crop/resize/noise/brightness/mask) to validate robustness.
 
 Quick start (local dev):
 ```bash

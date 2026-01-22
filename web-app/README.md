@@ -1,7 +1,17 @@
 # Web App (Local)
 
 This is a minimal local web app wrapper around the `blind_watermark` Python library.
-This is a fork with second-round modifications.
+This fork adds local UI flows for text, image, and bit watermarks plus crop/screenshot recovery.
+
+## Features
+
+- Embed text, image, and bit watermarks.
+- Extract text, image, and bit watermarks (requires wm_size or wm_shape).
+- Recover from crop/screenshot attacks using the original image as a reference.
+- Generate attack samples (rotate, crop, screenshot, resize, noise, mask, brightness) to validate robustness.
+- Set passwords and output formats from the UI settings panel.
+- One-click recover + extract text flow (recover image then extract text in a single action).
+- Manual crop helper to trim screenshot borders before recovery.
 
 ## Backend
 
